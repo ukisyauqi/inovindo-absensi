@@ -1,16 +1,18 @@
 import React, { useEffect, useContext } from "react";
-import { Flex } from "@chakra-ui/react";
-import { initializeApp } from "firebase/app";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import { AppContext } from "./AppContext";
-
+import Navbar from "./components/Navbar";
+import MobileNavbar from "./components/MobileNavbar";
+import Dashboard from "./pages/Dashboard";
+import UserList from "./pages/UserList";
+import ManageUsers from "./pages/ManageUsers";
+import Settings from "./pages/Settings";
+import { Box } from "@chakra-ui/react";
 
 export default function App() {
-  
   const { auth, currentUser, setCurrentUser } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -29,8 +31,32 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route exact path="/" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <>
+              {window.innerWidth > 480 ? <Navbar /> : <MobileNavbar />}
+              <Outlet />
+            </>
+          }
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="user-list" element={<UserList />} />
+          <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+        <Route path="login" element={<Login />} />
+        <Route
+          path="*"
+          element={
+            <Box margin={10}>
+              Nothing Here <br />
+              <Link to="/dashboard" style={{ color: "blue" }}>
+                Go to Dashboard
+              </Link>
+            </Box>
+          }
+        />
       </Routes>
     </>
   );

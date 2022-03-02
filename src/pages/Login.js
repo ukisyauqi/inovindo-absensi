@@ -9,16 +9,20 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
   FormHelperText,
   InputRightElement,
+  Image,
+  HStack,
+  Spinner,
+  useToast,
+  Text,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { AppContext } from "../AppContext";
 import { useNavigate } from "react-router-dom";
-import bgLogin from "../assets/bgLogin.svg";
+import bgGradient from "../assets/bgGradient.svg";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -33,8 +37,33 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const handleShowClick = () => setShowPassword(!showPassword);
 
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await signIn(email, password);
+      toast({
+        position: "top",
+        title: "Login Success",
+        status: "success",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        position: "top",
+        title: "Login Failed",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (currentUser) navigate("/");
+    if (currentUser) navigate("/dashboard");
   }, [currentUser]);
 
   return (
@@ -42,28 +71,33 @@ export default function Login() {
       flexDirection="column"
       width="100wh"
       height="100vh"
-      // backgroundColor="gray.200"
       justifyContent="center"
       alignItems="center"
-      background={`url(${bgLogin}) top no-repeat`}
+      background="linear-gradient(120deg, rgba(61,176,107,1) 0%, rgba(61,162,176,1) 100%);"
     >
-      <bgLogin/>
       <Stack
         flexDir="column"
         mb="2"
         justifyContent="center"
         alignItems="center"
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Welcome</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
           <form>
             <Stack
               spacing={4}
-              p="1rem"
-              backgroundColor="whiteAlpha.900"
-              boxShadow="md"
+              p={8}
+              backgroundColor="white"
+              boxShadow="xl"
+              rounded="xl"
             >
+              <Heading
+                color="green.500"
+                fontWeight="medium"
+                align="center"
+                pb={2}
+              >
+                Log In
+              </Heading>
               <FormControl>
                 <InputGroup>
                   <InputLeftElement
@@ -97,16 +131,20 @@ export default function Login() {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <FormHelperText textAlign="right">
-                  <Link>forgot password?</Link>
-                </FormHelperText>
+                <FormHelperText textAlign="right"></FormHelperText>
               </FormControl>
               <Button
-                borderRadius={0}
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="green"
                 width="full"
-                onClick={() => signIn(email, password)}
+                onClick={handleSubmit}
+                isLoading={loading}
+                rounded="md"
+                background="linear-gradient(90deg, rgba(61,176,107,1) 0%, rgba(61,162,176,1) 100%);"
+                shadow="lg"
+                _hover={{
+                  filter: "brightness(1.1)",
+                }}
               >
                 Login
               </Button>
@@ -114,12 +152,6 @@ export default function Login() {
           </form>
         </Box>
       </Stack>
-      <Box>
-        New to us?{" "}
-        <Link color="teal.500" href="#">
-          Sign Up
-        </Link>
-      </Box>
     </Flex>
   );
 }

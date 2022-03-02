@@ -1,11 +1,11 @@
 import { createContext, useState } from "react";
 import {
   getAuth,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import { initializeApp } from "firebase/app";
+import { useToast } from "@chakra-ui/react";
 
 export const AppContext = createContext();
 export const AppContextProvider = (props) => {
@@ -18,27 +18,36 @@ export const AppContextProvider = (props) => {
     appId: "1:1005622228821:web:5e83af3841076766ef61dc",
   };
   initializeApp(firebaseConfig);
-
   const auth = getAuth();
+  const toast = useToast();
 
+  // state
   const [currentUser, setCurrentUser] = useState(false);
 
+  // function
   const signIn = (email, password) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("signin success");
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-      });
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
   const logout = () => {
     signOut(auth)
-      .then(() => console.log("Log Out Success"))
-      .catch((err) => console.log(err));
+      .then(() => {
+        toast({
+          position: "top",
+          title: "Logout Success",
+          status: "success",
+          duration: 2000,
+        });
+      })
+      .catch((error) => {
+        toast({
+          position: "top",
+          title: "Logout Failed",
+          description: error.message,
+          status: "error",
+          duration: 4000,
+        });
+      });
   };
 
   return (

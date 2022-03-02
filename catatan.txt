@@ -1,0 +1,70 @@
+import { Box } from "@chakra-ui/react";
+import React from "react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+export default function Dashboard() {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip
+  );
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Chart.js Line Chart",
+      },
+    },
+  };
+
+  const labels = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+  ];
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: [20, 30, 10, 40, 20, 30],
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+  return (
+    <Box
+      bg="linear-gradient(120deg, rgba(61,176,107,1) 0%, rgba(61,162,176,1) 100%)"
+      minH="100vh"
+      pt="20px"
+      boxShadow="0px 10px 10px -10px rgba(0,0,0,0.5) inset;"
+    >
+      <Box mx="auto" h="300px" w="50vw" bg="white" shadow="xl" rounded="xl">
+        <Line options={options} data={data} />
+      </Box>
+    </Box>
+  );
+}
